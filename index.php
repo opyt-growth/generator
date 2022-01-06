@@ -18,20 +18,8 @@ require 'config.php'
 <div class="container">
     <main>
 <?php
+print '<h1>Banco: ' . $_GET['banco'] . '</h1>';
 if(isset($_GET['banco'])) {
-    if (isset($db) && $_GET['banco'] == 'crm') {
-        $query = $db->prepare('show tables');
-        $query->execute();
-        echo '<form class="mt-5"><div class="row g-3>"';
-        echo '<label for="select-table" >Tabelas</label><select id="select-table" class="form-select" aria-label="">';
-        while ($row = $query->fetch(PDO::FETCH_NUM)) {
-            echo '<option value="' . $row[0] . '">' . $row[0] . '</option>';
-        }
-        echo '</select></div>';
-
-        echo '<button id="btn-gerar" class="w-100 btn btn-primary btn-lg mt-5" type="button">Gerar Class</button>';
-        echo '</form>';
-    }
     if (isset($rbx_db) && $_GET['banco'] == 'rbx') {
         $query = $rbx_db->prepare('show tables');
         $query->execute();
@@ -44,7 +32,21 @@ if(isset($_GET['banco'])) {
 
         echo '<button id="btn-gerar" class="w-100 btn btn-primary btn-lg mt-5" type="button">Gerar Class</button>';
         echo '</form>';
+    } else if(isset($db)) {
+        
+        $query = $db->prepare('show tables');
+        $query->execute();
+        echo '<form class="mt-5"><div class="row g-3>"';
+        echo '<label for="select-table" >Tabelas</label><select id="select-table" class="form-select" aria-label="">';
+        while ($row = $query->fetch(PDO::FETCH_NUM)) {
+            echo '<option value="' . $row[0] . '">' . $row[0] . '</option>';
+        }
+        echo '</select></div>';
+
+        echo '<button id="btn-gerar" class="w-100 btn btn-primary btn-lg mt-5" type="button">Gerar Class</button>';
+        echo '</form>';
     }
+
 }else{
     echo 'Escolha um banco de dados';
 }

@@ -5,7 +5,7 @@ if(!isset($_GET['q']) || !isset($_GET['banco'])){
 };
 
 require 'config.php';
-if (isset($db) && isset($rbx_db)) {
+
     if($_GET['banco'] == 'rbx'){
         $query = $rbx_db->prepare('SHOW COLUMNS FROM '.$_GET['q'] );
     }else{
@@ -17,13 +17,15 @@ if (isset($db) && isset($rbx_db)) {
    while ($rows = $query->fetchAll(PDO::FETCH_ASSOC)){
        foreach ($rows as $row){
            if(str_contains($row['Key'],'PRI')){
-               echo '[key]'.'</br>';
+               echo "@PrimaryGeneratedColumn({ name:'".$row['Field']."'})"."</br>";
+           }else{
+             echo "@Column({name:'".$row['Field']."', type:'".preg_replace('/[(0-9)]/i','',$row['Type'])."'})</br>";  
            }
-           echo '[Column("'.$row['Field'].'")]'.'</br>';
-           echo 'public '.getCustomType($row['Type']).' '.customUcFirst($row['Field']).' { get; set;}</br></br>';
+           
+           echo customUcFirst($row['Field']).":".getCustomType($row['Type']).'</br></br>';
        }
    }
-}
+
 
 function getCustomType($type): string
 {
@@ -31,7 +33,7 @@ function getCustomType($type): string
         return 'string';
     }
     if(str_contains($type,'int')){
-        return 'int';
+        return 'number';
     }
     if(str_contains($type,'timestamp')){
         return 'DateTime';
